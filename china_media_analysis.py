@@ -3,6 +3,12 @@ import pandas as pd
 import plotly.express as px
 from textblob import TextBlob
 import re
+import seaborn as sns
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+import numpy as np
 
 st.set_page_config(
     page_title="Ex-stream-ly Cool App",
@@ -95,6 +101,7 @@ df_dataset = load_data(file_path, sheet_name=dataset_sheet_name)
 def analyze_sentiment_textblob(text):
     analysis = TextBlob(str(text))
     return analysis.sentiment.polarity
+
 def perform_sentiment_analysis(df):
     text_columns = ['Name (English)', 'Name (Chinese)', 'Entity owner (English)', 'Entity owner (Chinese)',
                     'Parent entity (English)', 'Parent entity (Chinese)']
@@ -136,7 +143,6 @@ def perform_sentiment_analysis(df):
     of social media entities. This helps in understanding the emotional context and tone of social media engagement for each specified text column.
     """
     print("Columns in DataFrame:", df.columns)
-    hashtag_columns = ['Hashtags']
 
     st.caption(description)
 
@@ -168,7 +174,6 @@ def perform_sentiment_analysis(df):
     else:
         st.warning("No relevant text columns for sentiment analysis.")
 
-
 # Set the width of the sidebar using custom CSS
 st.markdown(
     """
@@ -187,11 +192,11 @@ st.title("PRC State Media On Social Media Platforms - 2023-11-03")
 display_dataset_summary(df_dataset)
 
 # Set up tabs for objectives
-selected_objective = st.selectbox("Select Objective", ["Objective 1: Subscribers Analysis and Insights", "Objective 2: Sentiment Analysis on Social Media Engagement", "Objective 3: Geographic Distribution of Engagement"])
+selected_objective = st.selectbox("Select Objective", ["Objective 1: Subscribers Analysis and Insights", "Objective 2: Sentiment Analysis on Social Media Engagement"])
 
 # Define content for each tab
 if "Objective 1" in selected_objective:
-    st.title("Objective 1: Subscribers Analysis and Insights")
+    st.title("Objective 1: Subscribers/Followers Analysis and Insights")
     st.caption('These visualizations provide a clear comparison of the Followers across various social media platforms, allowing us to identify trends and patterns in the data specific to Followers and Subscribers.')
     st.sidebar.caption('Please select the desired tab to explore the corresponding analysis.')
 
@@ -204,6 +209,7 @@ elif "Objective 2" in selected_objective:
     st.sidebar.caption('Please select the desired tab to explore the corresponding analysis.')
 
     perform_sentiment_analysis(df_dataset)
+
 
 
 # Sidebar demonstration section
