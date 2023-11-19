@@ -25,8 +25,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="data\" />
+    <Folder Include=".streamlit\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".streamlit\config.toml" />
     <Content Include="data\CANIS_PRC_state_media_on_social_media_platforms-2023-11-03.xlsx" />
     <Content Include="data\chrome_GpID0Dy4kc.gif" />
   </ItemGroup>

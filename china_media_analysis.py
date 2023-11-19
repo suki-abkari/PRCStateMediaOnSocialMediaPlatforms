@@ -2,13 +2,6 @@
 import pandas as pd
 import plotly.express as px
 from textblob import TextBlob
-import re
-import seaborn as sns
-import matplotlib.pyplot as plt
-import plotly.graph_objects as go
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
-import numpy as np
 
 st.set_page_config(
     page_title="Ex-stream-ly Cool App",
@@ -21,6 +14,11 @@ st.set_page_config(
 @st.cache_data
 def load_data(file_path, sheet_name):
     return pd.read_excel(file_path, sheet_name=sheet_name)
+
+# Load your dataset
+file_path = 'data/CANIS_PRC_state_media_on_social_media_platforms-2023-11-03.xlsx'
+dataset_sheet_name = 'FULL'
+df_dataset = load_data(file_path, sheet_name=dataset_sheet_name)
 
 # Function to display dataset and summary
 def display_dataset_summary(df):
@@ -85,23 +83,14 @@ def perform_data_visualization(df, selected_tab):
                 # Display analysis and description before the chart
                 st.markdown(description)
                 st.plotly_chart(fig_social_media_presence, use_container_width=True, className="scrolling-container")
-
-        # Description and Analysis (outside the tabs)
-        st.subheader(f"{selected_tab} Analysis and Insights")
     else:
         st.warning(f"The selected tab '{selected_tab}' doesn't have any relevant data columns.")
-
-# Load your dataset
-file_path = 'data/CANIS_PRC_state_media_on_social_media_platforms-2023-11-03.xlsx'
-dataset_sheet_name = 'FULL'
-df_dataset = load_data(file_path, sheet_name=dataset_sheet_name)
 
 # Objective 2
 # Function to perform sentiment analysis on social media engagement
 def analyze_sentiment_textblob(text):
     analysis = TextBlob(str(text))
     return analysis.sentiment.polarity
-
 def perform_sentiment_analysis(df):
     text_columns = ['Name (English)', 'Name (Chinese)', 'Entity owner (English)', 'Entity owner (Chinese)',
                     'Parent entity (English)', 'Parent entity (Chinese)']
@@ -174,17 +163,140 @@ def perform_sentiment_analysis(df):
     else:
         st.warning("No relevant text columns for sentiment analysis.")
 
-# Set the width of the sidebar using custom CSS
-st.markdown(
-    """
-    <style>
-        .reportview-container .sidebar-content {
-            width: 300px;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+# Objective 3
+# Function to perform language-based analysis
+def perform_language_analysis(df):
+    language_column = 'Language'
+    social_media_columns = ['X (Twitter) Follower #', 'Facebook Follower #', 'Instagram Follower #', 'Threads Follower #',
+                             'YouTube Subscriber #', 'TikTok Subscriber #']
+
+    if language_column in df.columns and any(col in df.columns for col in social_media_columns):
+        fig_language = px.bar(
+            df,
+            x=language_column,
+            y=social_media_columns,
+            title='Language-based Analysis of Subscribers and Followers',
+            labels={'value': 'Counts of Followers/Subscribers', 'variable': 'Social Media Platform'},
+            template='plotly',
+            color_discrete_map={'X (Twitter) Follower #': 'black', 'Facebook Follower #': 'blue', 'Instagram Follower #': 'purple',
+                                'Threads Follower #': 'green', 'YouTube Subscriber #': 'red', 'TikTok Subscriber #': 'violet'},
+            barmode='group',  # This makes the bars grouped instead of stacked
+        )
+
+        st.title("Objective 4: Language Engagement Analysis")
+
+        # Add a comprehensive caption explaining the objectives and insights of the analysis
+        st.caption("""
+        This analysis aims to provide insights into language-based engagement on social media platforms for PRC State Media entities.
+        The grouped bar chart displays the distribution of subscribers and followers across different social media platforms based on the language
+        in which content is presented. Each group of bars represents a language, and within each group, the different colors correspond
+        to the counts of subscribers and followers on different social media platforms.
+
+        Key Insights:
+        - Identify which languages have the highest and lowest engagement across social media platforms.
+        - Understand the distribution of subscribers and followers on specific platforms for each language.
+        - Explore potential correlations between language choice and social media engagement.
+        """)
+
+        st.plotly_chart(fig_language, use_container_width=True)
+    else:
+        st.warning("The dataset doesn't contain the necessary columns for language-based analysis.")
+        
+# Objective 4
+# Function to display top N entities
+def display_top_entities(df, n=10):
+    # Caption explaining chart elements
+    st.caption("""
+    **Chart Explanation:**
+    - **Number of Occurrences:** The horizontal bars in this chart represent the frequency of each media entity's appearance in the dataset. The length of each bar is proportional to the number of occurrences, providing a quantitative measure of the media entities' prominence.
+    - **Entity Owner:** The y-axis displays the names of the media entities included in the analysis. Each bar corresponds to a specific media entity, allowing for easy identification.
+    - **Color:** The color of each bar is determined by the count of occurrences, creating a color gradient. Darker colors indicate higher frequencies, while lighter colors represent lower frequencies. This color scale provides an additional dimension for understanding the dataset.
+
+    **Context:**
+    This analysis employs a horizontal bar chart to visually depict the distribution of media entities based on their occurrences in the dataset. The choice of a horizontal bar chart is suitable for comparing the frequencies of different entities, enabling a quick assessment of the most frequently mentioned media entities.
+
+    **Statistical Significance:**
+    The length of the bars serves as a direct representation of the statistical significance of each media entity within the dataset. Entities with longer bars are more frequently mentioned, suggesting a higher level of importance or relevance in the context under study.
+
+    **Color Mapping and Frequency Gradient:**
+    The color gradient adds an additional layer of information, allowing for a more nuanced interpretation of the data. Darker colors signify entities with higher frequencies, contributing to a more detailed analysis of the prominence distribution.
+
+    **Insights and Further Analysis:**
+    - Identification of Key Players: The chart facilitates the identification of key media entities with the highest occurrence rates.
+    - Comparative Analysis: Researchers can compare the prominence of different entities, gaining insights into the overall landscape of media representation.
+
+    This analytical approach provides a quantitative and visual representation of media entity occurrences, aiding researchers in uncovering patterns and making informed interpretations.
+    """)
+    # Count occurrences of each entity
+    entity_counts = df['Entity owner (English)'].value_counts().head(n)
+    
+    # Plot a different type of chart (e.g., horizontal bar chart)
+    fig_entities = px.bar(
+        x=entity_counts.values,
+        y=entity_counts.index,
+        orientation='h',  # Use 'h' for a horizontal bar chart
+        labels={'x': 'Number of Occurrences', 'y': 'Entity Owner'},
+        title=f'Top {n} Entity Owners',
+        color=entity_counts.values,
+        color_continuous_scale='Viridis',
+    )
+
+    # Display the chart
+    st.plotly_chart(fig_entities, use_container_width=True)
+# Function to perform platform-specific analysis
+def perform_platform_analysis(df):
+    
+    platform_columns = ['X (Twitter) Follower #', 'Facebook Follower #', 'Instagram Follower #', 'Threads Follower #',
+                        'YouTube Subscriber #', 'TikTok Subscriber #']
+
+    if any(col in df.columns for col in platform_columns):
+        # Create a bar chart using Plotly Express
+        fig_platform = px.bar(
+            df,
+            x='Name (English)',
+            y=platform_columns,
+            title='Platform-specific Analysis of Followers and Subscribers',
+            labels={'value': 'Counts', 'variable': 'Social Media Platform'},
+            template='plotly',
+            color_discrete_map={'X (Twitter) Follower #': 'black', 'Facebook Follower #': 'blue', 'Instagram Follower #': 'purple',
+                                'Threads Follower #': 'green', 'YouTube Subscriber #': 'red', 'TikTok Subscriber #': 'violet'}
+        )
+
+        # Customize the layout of the chart
+        fig_platform.update_layout(
+            barmode='stack',  # Choose 'stack' or 'group' as per your preference
+            xaxis_title='Media Entities',
+            yaxis_title='Counts',
+            legend_title='Social Media Platforms',
+            height=600,
+            width=1000,
+        )
+
+        # Display insights and explanations above the chart
+        st.title("Objective 4: Platform-specific Analysis")
+        display_top_entities(df, n=10)
+        st.caption("""
+        The objective of this analysis is to provide a detailed examination of the followers and subscribers 
+        across various social media platforms for PRC State Media entities. The data is presented in the form 
+        of a stacked bar chart, where each bar represents a distinct media entity.
+
+        Key Analytical Components:
+        - **Data Selection:** The dataset is examined for specific columns related to follower and subscriber counts on various platforms.
+        - **Visualization:** The stacked bar chart visually represents the distribution of counts for each platform across media entities.
+        - **Color Mapping:** Different colors within each bar indicate counts on different social media platforms.
+        
+        Insights:
+        - Identify the distribution of followers and subscribers across various social media platforms for each media entity.
+        - Explore variations in engagement on different platforms.
+        - Understand the overall social media presence of each media entity.
+
+        This analysis aids in uncovering patterns, trends, and disparities in the engagement levels of PRC State Media entities on different social media platforms.
+        """)
+        # Display the chart with the specified width
+        st.plotly_chart(fig_platform, use_container_width=True)
+    else:
+        st.warning("The dataset doesn't contain the necessary columns for platform-specific analysis.")
+
 
 st.title("PRC State Media On Social Media Platforms - 2023-11-03")
 
@@ -192,7 +304,10 @@ st.title("PRC State Media On Social Media Platforms - 2023-11-03")
 display_dataset_summary(df_dataset)
 
 # Set up tabs for objectives
-selected_objective = st.selectbox("Select Objective", ["Objective 1: Subscribers Analysis and Insights", "Objective 2: Sentiment Analysis on Social Media Engagement"])
+selected_objective = st.selectbox("Select Objective", ["Objective 1: Subscribers/Followers Analysis and Insights",
+                                                       "Objective 2: Sentiment Analysis on Social Media Engagement",
+                                                       "Objective 3: Language Engagement Analysis",
+                                                       "Objective 4: Platform-specific Analysis"])
 
 # Define content for each tab
 if "Objective 1" in selected_objective:
@@ -210,28 +325,39 @@ elif "Objective 2" in selected_objective:
 
     perform_sentiment_analysis(df_dataset)
 
+elif "Objective 3" in selected_objective:
+    perform_language_analysis(df_dataset)
 
+elif "Objective 4" in selected_objective:
+    perform_platform_analysis(df_dataset)
 
-# Sidebar demonstration section
-st.sidebar.title("Demos")
-demo_links = {
-    "Objective 1": {
-        "url": "data/chrome_GpID0Dy4kc.gif",
-        "type": "image",
-        "caption": "Demonstration of chart usage Analysis and subscriber information",
-    },
-    "Objective 2": {
-        "url": "data/chrome_GpID0Dy4kc.gif",
-        "type": "image",
-        "caption": "Demonstration of chart usage ...",
-    },
+# Define documentation for each objective
+documentation = {
+    "Objective 1: Subscribers/Followers Analysis and Insights": """
+        This objective focuses on providing a clear comparison of the Followers across various social media platforms.
+        The visualizations allow us to identify trends and patterns in the data specific to Followers and Subscribers.
+    """,
+    "Objective 2: Sentiment Analysis on Social Media Engagement": """
+        The objective of Sentiment Analysis on Social Media Engagement is to gain insights into the emotional tone and sentiment expressed in the textual content associated with social media engagement.
+        This includes analyzing comments, likes, and shares across different social media platforms.
+        By assessing sentiment, we aim to identify patterns and trends in the way audiences interact with and respond to the content presented by PRC State Media.
+    """,
+    "Objective 3: Language Engagement Analysis": """
+        This analysis provides insights into language-based engagement on social media platforms for PRC State Media entities.
+        The chart displays the distribution of subscribers and followers across different social media platforms based on the language in which content is presented.
+        Key insights include identifying languages with the highest and lowest engagement and exploring potential correlations between language choice and social media engagement.
+    """,
+    "Objective 4: Platform-specific Analysis": """
+        This objective focuses on platform-specific analysis, providing insights into the distribution of followers and subscribers across different social media platforms.
+        The chart displays counts of followers and subscribers for each social media platform, allowing for a platform-specific understanding of engagement.
+    """
 }
 
-selected_demo = st.sidebar.selectbox("Select Demo", list(demo_links.keys()))
+# Sidebar section for objectives documentation
+st.sidebar.title("Objectives Documentation")
 
-demo = demo_links[selected_demo]
-if demo["type"] == "video":
-    st.sidebar.video(demo["url"])
-    st.sidebar.caption(demo["caption"])
-elif demo["type"] == "image":
-    st.sidebar.image(demo["url"], caption=demo["caption"], use_column_width=True)
+# Set up tabs for objectives documentation
+selected_objective_doc = st.sidebar.selectbox("Select Objective Documentation", list(documentation.keys()))
+
+# Display documentation for the selected objective in the sidebar
+st.sidebar.markdown(documentation[selected_objective_doc])
