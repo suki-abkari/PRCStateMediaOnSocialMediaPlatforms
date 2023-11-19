@@ -183,7 +183,7 @@ def perform_language_analysis(df):
             barmode='group',  # This makes the bars grouped instead of stacked
         )
 
-        st.title("Objective 4: Language Engagement Analysis")
+        st.title("Objective 3: Language Engagement Analysis")
 
         # Add a comprehensive caption explaining the objectives and insights of the analysis
         st.caption("""
