@@ -82,4 +82,4 @@ Run the presentation script:
 streamlit run china_media_analysis.py
 ```
 
-Author: `https://github.com/suki-abkari/`
+Author: [suki-abkari](https://github.com/suki-abkari/)
