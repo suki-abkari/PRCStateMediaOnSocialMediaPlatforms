@@ -23,7 +23,7 @@ df_dataset = load_data(file_path, sheet_name=dataset_sheet_name)
 # Function to display dataset and summary
 def display_dataset_summary(df):
     st.write("Full Dataset")
-    st.write(df.head(758))  # Displaying the first 10 rows for brevity
+    st.write(df.head(758)) 
 
 # Objective 1
 # Function to perform data visualization and analysis
@@ -144,7 +144,7 @@ def perform_language_analysis(df):
             template='plotly',
             color_discrete_map={'X (Twitter) Follower #': 'black', 'Facebook Follower #': 'blue', 'Instagram Follower #': 'purple',
                                 'Threads Follower #': 'green', 'YouTube Subscriber #': 'red', 'TikTok Subscriber #': 'violet'},
-            barmode='group',  # This makes the bars grouped instead of stacked
+            barmode='group',
         )
 
         st.plotly_chart(fig_language, use_container_width=True)
@@ -157,11 +157,10 @@ def display_top_entities(df, n=10):
     # Count occurrences of each entity
     entity_counts = df['Entity owner (English)'].value_counts().head(n)
     
-    # Plot a different type of chart (e.g., horizontal bar chart)
     fig_entities = px.bar(
         x=entity_counts.values,
         y=entity_counts.index,
-        orientation='h',  # Use 'h' for a horizontal bar chart
+        orientation='h', #'h' for a horizontal bar chart
         labels={'x': 'Number of Occurrences', 'y': 'Entity Owner'},
         title=f'Top {n} Entity Owners',
         color=entity_counts.values,
@@ -169,7 +168,7 @@ def display_top_entities(df, n=10):
     )
 
     # Display the chart
-    st.plotly_chart(fig_entities, use_container_width=True)
+    st.plotly_chart(fig_entities, use_container_width=True)  
 # Function to perform platform-specific analysis
 def perform_platform_analysis(df):
     
@@ -188,10 +187,9 @@ def perform_platform_analysis(df):
             color_discrete_map={'X (Twitter) Follower #': 'black', 'Facebook Follower #': 'blue', 'Instagram Follower #': 'purple',
                                 'Threads Follower #': 'green', 'YouTube Subscriber #': 'red', 'TikTok Subscriber #': 'violet'}
         )
-
-        # Customize the layout of the chart
+        
         fig_platform.update_layout(
-            barmode='stack',  # Choose 'stack' or 'group' as per your preference
+            barmode='stack', 
             xaxis_title='Media Entities',
             yaxis_title='Counts',
             legend_title='Social Media Platforms',
@@ -199,20 +197,40 @@ def perform_platform_analysis(df):
             width=1000,
         )
         display_top_entities(df, n=10)
-       
-        # Display the chart with the specified width
         st.plotly_chart(fig_platform, use_container_width=True)
     else:
         st.warning("The dataset doesn't contain the necessary columns for platform specific analysis.")
 
 
-st.title("PRC State Media On Social Media Platforms - 2023-11-03")
+# Brief description about the application and dataset
+st.title("Media Insight Explorer: PRC State Media")
+# Use the columns layout
+col1, col2 = st.columns(2)
+# Dataset Information
+with col1:
+    st.header(""" ***Dataset Information*** """)
+    st.container()
+    st.markdown("""
+    The dataset contains relevant metrics such as follower counts on Twitter, Facebook, Instagram, Threads, YouTube, and TikTok for various PRC State Media entities. It also includes sentiment scores, language-based engagement, and platform-specific metrics.
+    
+    Feel free to navigate through different objectives using the tabs on the left to gain valuable insights and make data-driven decisions.
+    """)
+# Application Overview
+with col2:
+    st.header(""" ***Application Overview*** """)
+    st.container()
+    st.markdown("""
+    Explore insights and analytics related to PRC State Media's engagement on various social media platforms. The analysis covers subscribers/followers, sentiment analysis, language engagement, and platform-specific metrics.
+    """)
+
+
+
 
 # Display dataset and summary
 display_dataset_summary(df_dataset)
 
 # Set up tabs for objectives
-selected_objective = st.selectbox("Select Objective", ["Objective 1: Subscribers/Followers Analysis and Insights",
+selected_objective = st.selectbox("Select Objective: Please select the target to display the charst", ["Objective 1: Subscribers/Followers Analysis and Insights",
                                                        "Objective 2: Sentiment Analysis on Social Media Engagement",
                                                        "Objective 3: Language Engagement Analysis",
                                                        "Objective 4: Platform specific Analysis"])
@@ -220,20 +238,71 @@ selected_objective = st.selectbox("Select Objective", ["Objective 1: Subscribers
 # Define content for each tab
 if "Objective 1" in selected_objective:
     st.header("Objective 1: Subscribers/Followers Analysis and Insights", divider='violet')
+
+    # Create a container for the left column
+    left_column, right_column = st.columns(2)
+
+    # Followers Analysis
+    with left_column:
+        st.subheader("1. Followers Analysis:")
+        st.markdown("""
+        - **Scientific Objective:** Quantify and compare the follower counts of PRC State Media entities on different social media platforms, including Twitter, Facebook, Instagram, and Threads.
+        - **Representation:** Visualizes the distribution of followers across platforms, highlighting the relative popularity of each platform for state media entities.
+        - **Insights:** Identify trends, anomalies, or significant variations in follower counts, offering insights into audience preferences and the impact of state media on different platforms.
+        """)
+
+    # Subscribers Analysis
+    with right_column:
+        st.subheader("2. Subscribers Analysis:")
+        st.markdown("""
+        - **Scientific Objective:** Analyze and compare the subscriber counts of PRC State Media on YouTube and TikTok.
+        - **Representation:** Presents a visual comparison of subscribers on YouTube and TikTok, showcasing the platforms' significance for state media engagement.
+        - **Insights:** Uncover patterns in subscriber growth, assess the popularity of state media content on video-sharing platforms, and identify potential correlations with global events or specific content types.
+        """)
+
+    # Methodology and Analysis Framework
+    st.subheader("Methodology and Analysis Framework")
+    st.markdown(""" 1. #### ***Data Collection*** """)
+    st.markdown("The analysis is based on a dataset containing relevant metrics such as follower counts on Twitter, Facebook, Instagram, Threads, YouTube, and TikTok for various PRC State Media entities.")
+    
+    st.markdown(""" 2. #### ***Data Processing and Cleaning*** """)
+    st.markdown("Prior to analysis, the dataset undergoes thorough processing and cleaning to ensure accuracy and reliability. Missing or inconsistent data points are addressed to maintain the integrity of the analysis.")
+    
+    st.markdown(""" 3. #### ***Visualization and Interpretation*** """)
+    st.markdown("""
+    - **Dynamic Tab Selection:** Users can choose between 'Followers' and 'Subscribers' tabs to focus on specific metrics.
+    - **Granular Analysis:** The dataset is divided into manageable chunks, enabling a detailed examination of state media entities and their social media metrics.
+    - **Color-Coded Representation:** Visualizations utilize a color-coded scheme for different social media platforms, enhancing clarity and ease of interpretation.
+    - **Descriptive Insights:** Informative descriptions accompany visualizations, providing context and guiding users through the analysis.
+    """)
+
+    # Limitations and Future Considerations
+    st.markdown(""" 3. #### ***Limitations and Future Considerations*** """)
+    st.markdown("While this analysis provides valuable insights, it is essential to acknowledge potential limitations, such as data availability and the dynamic nature of social media metrics. Future iterations may involve incorporating additional metrics, sentiment analysis, and user feedback to enhance the depth and accuracy of the analysis.")
+
+    st.markdown("""
+    In essence, Objective 1 aims to empower users with a nuanced understanding of PRC State Media's social media presence, facilitating data-driven insights and informed decision-making.
+    """)
+    
+    selected_tab = st.selectbox("Select Tab", ["Followers", "Subscribers"])
+    perform_data_visualization(df_dataset, selected_tab)
+    st.header("Objective 1: Subscribers/Followers Analysis and Insights", divider='violet')
     # Followers Analysis
     st.subheader("1. Followers Analysis:")
     st.markdown("""
-    - **Scientific Objective:** To quantify and compare the follower counts of PRC State Media entities on different social media platforms, including Twitter, Facebook, Instagram, and Threads.
-    - **Representation:** The analysis visualizes the distribution of followers across platforms, highlighting the relative popularity of each platform for state media entities.
+    - **Scientific Objective:** Quantify and compare the follower counts of PRC State Media entities on different social media platforms, including Twitter, Facebook, Instagram, and Threads.
+    - **Representation:** Visualizes the distribution of followers across platforms, highlighting the relative popularity of each platform for state media entities.
     - **Insights:** Identify trends, anomalies, or significant variations in follower counts, offering insights into audience preferences and the impact of state media on different platforms.
     """)
+
     # Subscribers Analysis
     st.subheader("2. Subscribers Analysis:")
     st.markdown("""
-    - **Scientific Objective:** To analyze and compare the subscriber counts of PRC State Media on YouTube and TikTok.
-    - **Representation:** The analysis presents a visual comparison of subscribers on YouTube and TikTok, showcasing the platforms' significance for state media engagement.
+    - **Scientific Objective:** Analyze and compare the subscriber counts of PRC State Media on YouTube and TikTok.
+    - **Representation:** Presents a visual comparison of subscribers on YouTube and TikTok, showcasing the platforms' significance for state media engagement.
     - **Insights:** Uncover patterns in subscriber growth, assess the popularity of state media content on video-sharing platforms, and identify potential correlations with global events or specific content types.
     """)
+
     st.subheader("Methodology and Analysis Framework:")
     st.markdown("### Data Collection:")
     st.markdown("The analysis is based on a dataset containing relevant metrics such as follower counts on Twitter, Facebook, Instagram, Threads, YouTube, and TikTok for various PRC State Media entities.")
@@ -258,7 +327,7 @@ if "Objective 1" in selected_objective:
     
     selected_tab = st.selectbox("Select Tab", ["Followers", "Subscribers"])
     perform_data_visualization(df_dataset, selected_tab)
-
+    
 elif "Objective 2" in selected_objective:
     st.header("Objective 2: Sentiment Analysis on Social Media Engagement", divider='violet')
     st.markdown("""
@@ -267,7 +336,7 @@ elif "Objective 2" in selected_objective:
     st.markdown("""
     The objective of Sentiment Analysis on Social Media Engagement is to gain insights into the emotional tone and sentiment expressed in the textual content associated with social media engagement. This includes analyzing comments, likes, and shares across different social media platforms. By assessing sentiment, we aim to identify patterns and trends in the way audiences interact with and respond to the content presented by PRC State Media.
     """)    
-    st.markdown("### Visualization and Interpretation:")
+    st.markdown(""" #### ***Visualization and Interpretation*** """)
     st.markdown("""
     - **Y-axis (Vertical Axis):** Count Represents the count of occurrences for each sentiment category. The height of each bar indicates how many text entries fall into the respective sentiment category.            
     - **Stacked Bar Chart:** Each bar is divided into three segments (Negative, Neutral, Positive), representing the distribution of sentiment within the selected text column. The color of each segment corresponds to the sentiment category.
@@ -288,7 +357,7 @@ elif "Objective 3" in selected_objective:
     st.markdown("""
     The objective of Sentiment Analysis on Social Media Engagement is to gain insights into the emotional tone and sentiment expressed in the textual content associated with social media engagement. This includes analyzing comments, likes, and shares across different social media platforms. By assessing sentiment, we aim to identify patterns and trends in the way audiences interact with and respond to the content presented by PRC State Media.
     """)    
-    st.markdown("### Key Insights:")
+    st.markdown(""" #### ***Key Insights*** """)
     st.markdown("""
     - Identify which languages have the highest and lowest engagement across social media platforms.
     - Understand the distribution of subscribers and followers on specific platforms for each language.
@@ -307,26 +376,19 @@ elif "Objective 4" in selected_objective:
     st.markdown("""
     The objective of Sentiment Analysis on Social Media Engagement is to gain insights into the emotional tone and sentiment expressed in the textual content associated with social media engagement. This includes analyzing comments, likes, and shares across different social media platforms. By assessing sentiment, we aim to identify patterns and trends in the way audiences interact with and respond to the content presented by PRC State Media.
     """)    
-    st.markdown("### Chart Explanation:")
+    st.markdown(""" #### ***Chart Explanation*** """)
     st.markdown("""
     - Number of Occurrences: The horizontal bars in this chart represent the frequency of each media entity's appearance in the dataset. The length of each bar is proportional to the number of occurrences, providing a quantitative measure of the media entities' prominence.
     - Entity Owner: The y-axis displays the names of the media entities included in the analysis. Each bar corresponds to a specific media entity, allowing for easy identification.
     - Color: The color of each bar is determined by the count of occurrences, creating a color gradient. Darker colors indicate higher frequencies, while lighter colors represent lower frequencies. This color scale provides an additional dimension for understanding the dataset.
     """)   
     
-    st.markdown("### Context:")
+    st.markdown(""" #### ***Context*** """)
     st.markdown("""
     This analysis employs a horizontal bar chart to visually depict the distribution of media entities based on their occurrences in the dataset. The choice of a horizontal bar chart is suitable for comparing the frequencies of different entities, enabling a quick assessment of the most frequently mentioned media entities.
-    """)  
-    st.markdown("### Statistical Significance:")       
-    st.markdown(""" 
-    The length of the bars serves as a direct representation of the statistical significance of each media entity within the dataset. Entities with longer bars are more frequently mentioned, suggesting a higher level of importance or relevance in the context under study.
-    """)
-    st.markdown("### Color Mapping and Frequency Gradient:")       
-    st.markdown(""" 
-    The color gradient adds an additional layer of information, allowing for a more nuanced interpretation of the data. Darker colors signify entities with higher frequencies, contributing to a more detailed analysis of the prominence distribution.
-    """)
-    st.markdown("### Insights and Further Analysis:")       
+    """) 
+   
+    st.markdown(""" #### ***Insights and Further Analysis*** """)       
     st.markdown(""" 
     - Identification of Key Players: The chart facilitates the identification of key media entities with the highest occurrence rates.
     - Comparative Analysis: Researchers can compare the prominence of different entities, gaining insights into the overall landscape of media representation.
