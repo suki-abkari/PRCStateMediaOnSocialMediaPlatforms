@@ -346,6 +346,6 @@ st.sidebar.markdown("🔗 [GitHub Repository](https://github.com/your-team-name/
 
 st.sidebar.header("Challenge Info")
 st.sidebar.markdown(""" - ***Challenge name:*** CANIS Data Visualization and Foreign Interference """)
-st.sidebar.markdown(""" - ***Challenge Author:*** [CANIS](https://canis-network.ca)") """)
-st.sidebar.markdown(""" - ***Code Author:*** [suki-abkari](https://github.com/suki-abkari/)") """)
+st.sidebar.markdown(""" - ***Challenge Author:*** [CANIS](https://canis-network.ca) """)
+st.sidebar.markdown(""" - ***Code Author:*** [suki-abkari](https://github.com/suki-abkari/) """)
 
