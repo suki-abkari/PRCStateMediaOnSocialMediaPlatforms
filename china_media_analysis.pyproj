@@ -30,7 +30,7 @@
   <ItemGroup>
     <Content Include=".streamlit\config.toml" />
     <Content Include="data\CANIS_PRC_state_media_on_social_media_platforms-2023-11-03.xlsx" />
-    <Content Include="data\chrome_GpID0Dy4kc.gif" />
+    <Content Include="readme.md" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
